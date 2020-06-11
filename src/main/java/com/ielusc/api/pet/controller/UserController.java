@@ -44,32 +44,32 @@ public class UserController {
         }
     }
 
+    @PutMapping (value = {"/{uid}"})
+    public ResponseEntity atualizaUsuario(@PathVariable long uid, @RequestBody User user){
+        Optional<User> updateUser = userRepository.findById(uid);
 
+        if (updateUser.isPresent()) {
 
+            updateUser.get().setEmail(user.getEmail());
+            updateUser.get().setName(user.getName());
+            updateUser.get().setPassword(user.getPassword());
 
+            userRepository.save(updateUser.get());
 
-
-
-
-
-    @PutMapping (value = {"{uid}"})
-    public ResponseEntity atualizaUsuario(@PathVariable("id") long uid){
-        Optional<User> user = userRepository.findById(uid);
-
-        if (user.isPresent()) {
-            return new ResponseEntity(userRepository.save(user), HttpStatus.CREATED);
+            return ResponseEntity.ok().body(user);
         }
-        else {
+        else{
             return ResponseEntity.notFound().build();
         }
     }
 
-    @DeleteMapping(path ={"{uid}"})
-    public ResponseEntity deletaUsuario(@PathVariable("id") long uid) {
+    @DeleteMapping(path ={"/{uid}"})
+    public ResponseEntity deletaUsuario(@PathVariable long uid) {
         Optional<User> user = userRepository.findById(uid);
 
         if (user.isPresent()) {
-            return ResponseEntity.ok().body(user);
+            userRepository.delete(user.get());
+            return ResponseEntity.ok().build();
         }
         else {
             return ResponseEntity.notFound().build();
